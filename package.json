@@ -1,5 +1,5 @@
 {
-  "name": "stateless-mcp-github-server",
+  "name": "foundry-airgap",
   "version": "1.0.0",
   "description": "Stateless Model Context Protocol (MCP) server for Git and GitHub operations",
   "type": "module",
