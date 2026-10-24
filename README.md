@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/header.svg" width="100%" alt="Cipher Header Banner" />
+</p>
+
 # cipher-mcp
 
 Model Context Protocol (MCP) server exposing local operational tools via JSON-RPC 2.0.
