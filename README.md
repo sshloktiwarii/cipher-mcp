@@ -4,6 +4,8 @@ Model Context Protocol (MCP) server exposing local operational tools via JSON-RP
 
 Written in pure Go and backed by SQLite WAL storage. Implements the standard Model Context Protocol over stdio, HTTP, and Unix domain sockets (`/tmp/cipher/mcp.sock`).
 
+Looking for a plain-English, non-technical summary? See [EXPLAINER.md](EXPLAINER.md).
+
 ---
 
 ## Exposed MCP Tools
