@@ -1,5 +1,5 @@
 {
-  "name": "foundry-airgap",
+  "name": "cipher-mcp",
   "version": "1.0.0",
   "description": "Stateless Model Context Protocol (MCP) server for Git and GitHub operations",
   "type": "module",

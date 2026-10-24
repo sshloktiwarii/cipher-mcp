@@ -1,4 +1,4 @@
-# Foundry Airgap: Stateless MCP Git Operations Server
+# cipher-mcp: Stateless MCP Git Operations Server
 
 A high-performance Model Context Protocol (MCP) server that exposes local Git operations and version control actions directly to AI coding agents via standard MCP Stdio transport.
 
@@ -22,7 +22,7 @@ npm run build
   "mcpServers": {
     "git-operations": {
       "command": "node",
-      "args": ["/path/to/foundry-airgap/dist/index.js"]
+      "args": ["/path/to/cipher-mcp/dist/index.js"]
     }
   }
 }
