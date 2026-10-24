@@ -18,8 +18,10 @@ import crypto from "node:crypto";
 const DB_PATH = path.resolve(process.cwd(), "pending_actions.db");
 const HTTP_PORT = parseInt(process.env.HITL_PORT || "8085", 10);
 
-// Initialize SQLite database for HITL queue
+// Initialize SQLite database with WAL mode for HITL queue
 const db = new DatabaseSync(DB_PATH);
+db.exec("PRAGMA journal_mode = WAL;");
+db.exec("PRAGMA synchronous = NORMAL;");
 db.exec(`
   CREATE TABLE IF NOT EXISTS pending_actions (
     id TEXT PRIMARY KEY,
@@ -258,6 +260,15 @@ const httpServer = http.createServer(async (req, res) => {
     return;
   }
 
+function escapeHtml(str: string): string {
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
   // Web UI for Review and Approval
   if (url.pathname === "/ui") {
     const rows = db.prepare("SELECT * FROM pending_actions ORDER BY created_at DESC").all() as any[];
@@ -286,17 +297,17 @@ const httpServer = http.createServer(async (req, res) => {
         ${rows.map((row) => `
           <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong>ID: <code>${row.id}</code></strong>
-              <span class="badge ${row.status.includes('pending') ? 'pending' : row.status === 'approved' ? 'approved' : 'rejected'}">${row.status}</span>
+              <strong>ID: <code>${escapeHtml(row.id)}</code></strong>
+              <span class="badge ${row.status.includes('pending') ? 'pending' : row.status === 'approved' ? 'approved' : 'rejected'}">${escapeHtml(row.status)}</span>
             </div>
-            <p style="margin: 8px 0; font-size: 16px;"><strong>Message:</strong> ${row.message}</p>
-            <p style="margin: 4px 0; color: #94a3b8; font-size: 13px;">Repo: ${row.repo_path} | Branch: ${row.branch}</p>
-            <p style="margin: 4px 0; color: #94a3b8; font-size: 13px;">Files: <code>${row.files}</code></p>
-            ${row.commit_sha ? `<p style="color:#4ade80; font-size:13px;">SHA: <code>${row.commit_sha}</code></p>` : ""}
+            <p style="margin: 8px 0; font-size: 16px;"><strong>Message:</strong> ${escapeHtml(row.message)}</p>
+            <p style="margin: 4px 0; color: #94a3b8; font-size: 13px;">Repo: ${escapeHtml(row.repo_path)} | Branch: ${escapeHtml(row.branch)}</p>
+            <p style="margin: 4px 0; color: #94a3b8; font-size: 13px;">Files: <code>${escapeHtml(row.files)}</code></p>
+            ${row.commit_sha ? `<p style="color:#4ade80; font-size:13px;">SHA: <code>${escapeHtml(row.commit_sha)}</code></p>` : ""}
             ${row.status === 'pending_approval' ? `
               <div style="margin-top: 16px;">
-                <button class="btn-approve" onclick="fetch('/actions/${row.id}/approve', {method:'POST'}).then(() => location.reload())">Approve & Commit</button>
-                <button class="btn-reject" onclick="fetch('/actions/${row.id}/reject', {method:'POST'}).then(() => location.reload())">Reject</button>
+                <button class="btn-approve" onclick="fetch('/actions/${encodeURIComponent(row.id)}/approve', {method:'POST'}).then(() => location.reload())">Approve & Commit</button>
+                <button class="btn-reject" onclick="fetch('/actions/${encodeURIComponent(row.id)}/reject', {method:'POST'}).then(() => location.reload())">Reject</button>
               </div>
             ` : ""}
           </div>
