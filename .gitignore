@@ -1,11 +1,15 @@
+# Binaries
 cipher-mcp
 *.exe
 *.test
-node_modules/
-dist/
-*.log
-*.db
-*.db-*
-.DS_Store
-.env
 
+# SQLite databases & WAL
+*.db
+*.db-shm
+*.db-wal
+
+# Sockets
+*.sock
+
+# OS
+.DS_Store
